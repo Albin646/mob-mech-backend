@@ -21,6 +21,10 @@ public class Mechanic {
     private String specialization;
 
     private double rating = 0.0;
+    private int totalRatings = 0;
+
+    private double latitude;
+    private double longitude;
 
     @OneToOne
     @JoinColumn(name = "user_id")

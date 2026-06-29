@@ -1,6 +1,7 @@
 package com.example.mobmech.controller;
 
 import com.example.mobmech.dto.ServiceRequestDTO;
+import com.example.mobmech.dto.TrackingDTO;
 import com.example.mobmech.entity.ServiceRequest;
 import com.example.mobmech.service.ServiceRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +43,11 @@ public class ServiceRequestController {
     @GetMapping("/{id}")
     public ServiceRequest getRequest(@PathVariable Long id) {
         return serviceRequestService.getRequest(id);
+    }
+
+    @GetMapping("/{requestId}/tracking")
+    public TrackingDTO getTracking(@PathVariable Long requestId) {
+
+        return serviceRequestService.getTracking(requestId);
     }
 }

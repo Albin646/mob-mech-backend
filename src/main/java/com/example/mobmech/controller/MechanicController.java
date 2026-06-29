@@ -7,6 +7,7 @@ import com.example.mobmech.security.JwtUtil;
 import com.example.mobmech.service.ServiceRequestService;
 import com.example.mobmech.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.mobmech.entity.User;
 
@@ -24,11 +25,6 @@ public class MechanicController {
             @RequestBody MechanicRegisterRequest request ){
 
         return userService.registerMechanic(request);
-    }
-
-    @PostMapping("/{id}/rate")
-    public Mechanic rateMechanic(@PathVariable long id, @RequestBody RatingDTO dto) {
-        return  userService.rateMechanic(id, dto.getRating());
     }
 
     @Autowired
@@ -57,6 +53,12 @@ public class MechanicController {
         return serviceRequestService.acceptRequest(requestId, mechanicId);
     }
 
+    @PutMapping("{id}/location")
+    public User updateLocation(@PathVariable Long id,
+                               @RequestBody LocationDTO locationDTO) {
+        return userService.updateLocation(id, locationDTO);
+    }
+
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -70,9 +72,17 @@ public class MechanicController {
 
         String token = jwtUtil.generateToken(user);
 
+        Long mechanicId = userService.getMechanicIdByUserId(user.getId());
+
         return new AuthResponse(
                 token,
-                user.getRole()
+                user.getRole(),
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                mechanicId
         );
     }
+
+
 }

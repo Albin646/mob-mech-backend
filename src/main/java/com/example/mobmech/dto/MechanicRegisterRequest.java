@@ -11,5 +11,7 @@ public class MechanicRegisterRequest {
 
     private int experience;
     private String specialization;
+    private Double latitude;
+    private Double longitude;
 
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class RatingDTO {
 
-    private Long mechanicId;
+    private Long requestId;
     private double rating;
 }

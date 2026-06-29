@@ -3,6 +3,7 @@ package com.example.mobmech.service;
 import com.example.mobmech.dto.CustomerDashboardDTO;
 import com.example.mobmech.dto.MechanicDashboardDTO;
 import com.example.mobmech.dto.ServiceRequestDTO;
+import com.example.mobmech.dto.TrackingDTO;
 import com.example.mobmech.entity.Mechanic;
 import com.example.mobmech.entity.ServiceRequest;
 import com.example.mobmech.entity.User;
@@ -67,6 +68,29 @@ public class ServiceRequestService {
 
         return requestRepository.save(request);
     }
+    public void rateMechanic(Long requestId, double newRating) {
+
+        ServiceRequest request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (!"COMPLETED".equals(request.getStatus())) {
+            throw new RuntimeException("Job is not completed yet");
+        }
+
+        Mechanic mechanic = request.getMechanic();
+
+        double currentRating = mechanic.getRating();
+        int totalRatings = mechanic.getTotalRatings();
+
+        double updatedRating =
+                ((currentRating * totalRatings) + newRating)
+                        / (totalRatings + 1);
+
+        mechanic.setRating(updatedRating);
+        mechanic.setTotalRatings(totalRatings + 1);
+
+        mechanicRepository.save(mechanic);
+    }
 
 
     public List<ServiceRequest> getCustomerRequests(Long customerId) {
@@ -113,5 +137,43 @@ public class ServiceRequestService {
 
     public ServiceRequest getRequest(Long id) {
         return requestRepository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
+    }
+
+    public TrackingDTO getTracking(Long requestId) {
+
+        ServiceRequest request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (request.getMechanic() == null) {
+            throw new RuntimeException("No mechanic assigned yet");
+        }
+
+        User customer = request.getCustomer();
+        Mechanic mechanic = request.getMechanic();
+
+        return new TrackingDTO(
+                customer.getLatitude(),
+                customer.getLongitude(),
+
+                mechanic.getUser().getLatitude(),
+                mechanic.getUser().getLongitude(),
+
+                mechanic.getUser().getName(),
+                request.getStatus()
+        );
+    }
+
+    public ServiceRequest cancelRequest(Long requestId) {
+
+        ServiceRequest request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Request not found"));
+
+        if (!"PENDING".equals(request.getStatus())) {
+            throw new RuntimeException("Only pending requests can be cancelled");
+        }
+
+        request.setStatus("CANCELLED");
+
+        return requestRepository.save(request);
     }
 }

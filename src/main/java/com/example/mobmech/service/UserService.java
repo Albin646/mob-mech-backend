@@ -5,6 +5,7 @@ import com.example.mobmech.dto.MechanicRegisterRequest;
 import com.example.mobmech.dto.NearbyMechanicDTO;
 import com.example.mobmech.dto.RegisterRequest;
 import com.example.mobmech.entity.Mechanic;
+import com.example.mobmech.entity.ServiceRequest;
 import com.example.mobmech.entity.User;
 import com.example.mobmech.repository.MechanicRepository;
 import com.example.mobmech.repository.UserRepository;
@@ -54,29 +55,30 @@ public class UserService {
 
         mechanic.setExperience(request.getExperience());
         mechanic.setSpecialization(request.getSpecialization());
+
+        mechanic.setLatitude(
+                request.getLatitude() != null ? request.getLatitude() : 0.0
+        );
+
+        mechanic.setLongitude(
+                request.getLongitude() != null ? request.getLongitude() : 0.0
+        );
+
         mechanic.setUser(savedUser);
 
         return mechanicRepository.save(mechanic);
+
     }
 
-    public Mechanic rateMechanic(Long mechanicId, double rating) {
-
-        if (rating < 1 || rating > 5) {
-            throw new RuntimeException("Rating must be between 1 and 5");
-        }
-
-        Mechanic mechanic = mechanicRepository.findById(mechanicId)
-                .orElseThrow(() -> new RuntimeException("Mechanic not found"));
-
-        double currentRating = mechanic.getRating();
-
-        mechanic.setRating((currentRating + rating) / 2);
-
-        return mechanicRepository.save(mechanic);
-    }
 
     public List<Mechanic> searchMechanics(String specialization) {
         return mechanicRepository.findBySpecialization(specialization);
+    }
+
+    public Long getMechanicIdByUserId(Long userId) {
+        return mechanicRepository.findByUserId(userId)
+                .map(Mechanic::getId)
+                .orElseThrow(() -> new RuntimeException("Mechanic profile not found"));
     }
 
     public User login(String email, String password) {
@@ -129,7 +131,9 @@ public class UserService {
                     mechanic.getId(),
                     mechanic.getUser().getName(),
                     mechanic.getSpecialization(),
-                    distance
+                    distance,
+                    mechanic.getUser().getLatitude(),
+                    mechanic.getUser().getLongitude()
             );
             result.add(dto);
         }

@@ -14,5 +14,7 @@ public class NearbyMechanicDTO {
     private String name;
     private String specialization;
     private double distance;
+    private double latitude;
+    private double longitude;
 
 }
