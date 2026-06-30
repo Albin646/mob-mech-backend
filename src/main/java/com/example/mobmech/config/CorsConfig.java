@@ -17,8 +17,8 @@ public class CorsConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://127.0.0.1:5173",
-                "https://mob-mech-frontend.vercel.app",
-                "https://mob-mech-frontend-jyuc32s82-albin646s-projects.vercel.app"
+                "https://mobmech-frontend.vercel.app",
+                "https://mobmech-frontend-jyuc32s82-albin646s-projects.vercel.app"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
